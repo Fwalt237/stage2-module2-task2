@@ -1,6 +1,7 @@
 package com.example.servlet;
 
 import java.io.IOException;
+import java.util.Objects;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,8 +21,8 @@ public class LoginServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
-        HttpSession session = request.getSession();
-        if(session.getAttribute("user") == null) {
+        HttpSession session = request.getSession(false);
+        if(Objects.isNull(session.getAttribute("user"))) {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
             dispatcher.forward(request, response);
         }else{
@@ -36,7 +37,7 @@ public class LoginServlet extends HttpServlet {
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
-        if(getInstance().getUsers().contains(login) && !password.isEmpty()) {
+        if(getInstance().getUsers().contains(login) && !Objects.isNull(password)) {
             HttpSession session = request.getSession();
             session.setAttribute("user", login);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/user/hello.jsp");

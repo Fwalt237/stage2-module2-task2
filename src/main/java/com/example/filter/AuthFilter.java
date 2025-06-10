@@ -14,17 +14,18 @@ public class AuthFilter implements Filter  {
         Filter.super.init(filterConfig);
     }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpSession session = request.getSession();
-        if(Objects.isNull(session.getAttribute("user"))) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
-            dispatcher.forward(request, servletResponse);
-        } else {
-            filterChain.doFilter(servletRequest, servletResponse);
-        }
+@Override
+public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+                     FilterChain filterChain) throws IOException, ServletException {
+    HttpServletRequest request = (HttpServletRequest) servletRequest;
+    HttpSession session = request.getSession(false); // Don't create new session
+
+    if (session == null || session.getAttribute("user") == null) {
+        request.getRequestDispatcher("/login.jsp").forward(request, servletResponse);
+        return;
     }
+    filterChain.doFilter(servletRequest, servletResponse);
+}
 
     @Override
     public void destroy() {

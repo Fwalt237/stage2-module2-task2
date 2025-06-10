@@ -1,8 +1,6 @@
 package com.example.servlet;
 
 import java.io.IOException;
-import java.util.Objects;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,31 +18,27 @@ public class LoginServlet extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html");
         HttpSession session = request.getSession(false);
-        if(Objects.isNull(session.getAttribute("user"))) {
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
-            dispatcher.forward(request, response);
+        if(session == null || session.getAttribute("user") == null) {
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
         }else{
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/user/hello.jsp");
-            dispatcher.forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/user/hello.jsp");
         }
-
     }
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("text/html");
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
-        if(getInstance().getUsers().contains(login) && !Objects.isNull(password)) {
-            HttpSession session = request.getSession();
+        boolean validLogin = login != null && getInstance().getUsers().contains(login);
+        boolean validPassword = password != null && !password.trim().isEmpty();
+
+        if( validLogin && validPassword) {
+            HttpSession session = request.getSession(true);
             session.setAttribute("user", login);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/user/hello.jsp");
-            dispatcher.forward(request, response);
+            response.sendRedirect(request.getContextPath() + "/user/hello.jsp");
         } else{
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
-            dispatcher.forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }
 }

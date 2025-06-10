@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
         String login = request.getParameter("login");
         String password = request.getParameter("password");
 
-        if(getInstance().getUsers().contains(login) && password !=null){
+        if(getInstance().getUsers().contains(login) && !password.isEmpty()) {
             HttpSession session = request.getSession();
             session.setAttribute("user", login);
             RequestDispatcher dispatcher = request.getRequestDispatcher("/user/hello.jsp");
